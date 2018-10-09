@@ -34,11 +34,15 @@ def timestamp_millis():
 
 class MutexTable:
 
-    def __init__(self, region_name=default_region_name):
+    def __init__(self, region_name=default_region_name, wcu=1, rcu=1):
         self.dbresource = boto3.resource('dynamodb', region_name=region_name)
         self.dbclient = boto3.client('dynamodb', region_name=region_name)
         self.table_name = os.environ.get('DD_MUTEX_TABLE_NAME', DEFAULT_MUTEX_TABLE_NAME)
         logger.info("Mutex table name is " + self.table_name)
+        # write capacity unit
+        self.wcu = wcu
+        # read capacity unit
+        self.rcu = rcu
         self.get_table()
 
     def get_table(self):
@@ -73,8 +77,8 @@ class MutexTable:
                     },
                 ],
                 ProvisionedThroughput={
-                    'ReadCapacityUnits': 2,
-                    'WriteCapacityUnits': 2
+                    'ReadCapacityUnits': self.rcu,
+                    'WriteCapacityUnits': self.wcu
                 }
             )
         except botocore.exceptions.ClientError as e:
