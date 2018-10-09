@@ -8,6 +8,7 @@ from boto3.dynamodb.conditions import Attr
 
 
 logger = logging.getLogger('dyndbmutex')
+default_region_name = boto3.session.Session().region_name
 
 def setup_logging():
     logger.setLevel(logging.INFO)
@@ -33,7 +34,7 @@ def timestamp_millis():
 
 class MutexTable:
 
-    def __init__(self, region_name='us-west-2'):
+    def __init__(self, region_name=default_region_name):
         self.dbresource = boto3.resource('dynamodb', region_name=region_name)
         self.dbclient = boto3.client('dynamodb', region_name=region_name)
         self.table_name = os.environ.get('DD_MUTEX_TABLE_NAME', DEFAULT_MUTEX_TABLE_NAME)
@@ -153,7 +154,7 @@ class MutexTable:
 class DynamoDbMutex:
 
     def __init__(self, name, holder=None,
-                 timeoutms=30 * 1000, region_name='us-west-2'):
+                 timeoutms=30 * 1000, region_name=default_region_name):
         if holder is None:
             holder = str(uuid.uuid4())
         self.lockname = name
@@ -186,6 +187,6 @@ class DynamoDbMutex:
         return self.locked
 
     @staticmethod
-    def delete_table(region_name='us-west-2'):
+    def delete_table(region_name=default_region_name):
         table = MutexTable(region_name)
         table.delete_table()
