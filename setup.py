@@ -11,7 +11,7 @@ Mutual Exclusion using AWS DynamoDB
 
 setup(
     name='dyndbmutex',
-    version='0.3.0',
+    version='0.3.0-tronner1',
     license='ASL v2.0',
     packages=['dyndbmutex'],
     description='Mutual Exclusion using AWS DynamoDB',
